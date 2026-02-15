@@ -16,7 +16,7 @@ COPY index.html /pb_public/index.html
 RUN mkdir -p /pb_data
 
 # Expõe a porta que o Fly.io usa
-EXPOSE 8090
+EXPOSE 8080
 
 # Comando de inicialização
 CMD ["/usr/local/bin/pocketbase", "serve", "--http=0.0.0.0:$PORT", "--dir=/pb_data", "--publicDir=/pb_public"]
