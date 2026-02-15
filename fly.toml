@@ -1,4 +1,4 @@
-app = "alugafacil-backend"
+app = "alugafacil"
 primary_region = "gru"
 
 [http_service]
