@@ -1,24 +1,23 @@
-app = "alugafacil-backend"  # mude para o nome do seu app no Fly.io
-primary_region = "gru"  # São Paulo, Brasil (baixa latência)
+# fly.toml app configuration file generated for alugafacil on 2026-02-15T18:41:31Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'alugafacil'
+primary_region = 'ams'
+
+[build]
 
 [http_service]
-  internal_port = 8080  # deve bater com a porta do CMD no Dockerfile
+  internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
+  processes = ['app']
 
-  [[http_service.checks]]
-    interval = "30s"
-    grace_period = "5s"
-    method = "GET"
-    path = "/api/health"
-    protocol = "http"
-    timeout = "5s"
-
-[env]
-  PORT = "8080"  # deve bater com a porta
-
-[mounts]
-  source = "pb_data"
-  destination = "/pb_data"
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256
