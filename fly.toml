@@ -1,8 +1,8 @@
-app = "alugafacil"
-primary_region = "gru"
+app = "alugafacil-backend"  # mude para o nome do seu app no Fly.io
+primary_region = "gru"  # São Paulo, Brasil (baixa latência)
 
 [http_service]
-  internal_port = 8080
+  internal_port = 8080  # deve bater com a porta do CMD no Dockerfile
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
@@ -13,11 +13,11 @@ primary_region = "gru"
     grace_period = "5s"
     method = "GET"
     path = "/api/health"
-    protocol = "https"
+    protocol = "http"
     timeout = "5s"
 
 [env]
-  PORT = "8080"
+  PORT = "8080"  # deve bater com a porta
 
 [mounts]
   source = "pb_data"
