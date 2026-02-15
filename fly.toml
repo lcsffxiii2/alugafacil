@@ -13,7 +13,7 @@ primary_region = "gru"
     grace_period = "5s"
     method = "GET"
     path = "/api/health"
-    protocol = "http"
+    protocol = "https"
     timeout = "5s"
 
 [env]
