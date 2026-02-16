@@ -26,7 +26,7 @@
       top: 0; 
       left: 0; 
       z-index: 1000; 
-      transform: translateX(0); /* começa aberta no desktop */
+      transform: translateX(0); /* aberta por padrão no desktop */
     }
     .sidebar.collapsed { transform: translateX(-100%); } /* recolhida */
     .nav-link { color: #bdc3c7 !important; }
@@ -35,7 +35,7 @@
     .hidden { display: none !important; }
     .card-imovel:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); transition: all 0.25s; }
 
-    /* Botão hambúrguer fixo (sempre visível) */
+    /* Botão hambúrguer (só aparece após login) */
     .navbar-toggler { 
       position: fixed; 
       top: 1rem; 
@@ -46,29 +46,30 @@
       color: white; 
       padding: 0.5rem 1rem; 
       border-radius: 0.25rem;
+      display: none; /* começa escondido */
     }
 
-    /* Conteúdo principal com margem para não ficar embaixo do botão */
+    /* Conteúdo principal */
     .main-content { 
       padding-top: 70px; 
       padding-bottom: 2rem; 
       margin-left: 260px; /* espaço para sidebar aberta */
       transition: margin-left 0.3s ease;
     }
-
     .main-content.collapsed { 
-      margin-left: 0; /* quando sidebar recolhida */
+      margin-left: 0; 
     }
 
     /* Ajustes mobile */
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); } /* começa recolhida no celular */
-      .main-content { margin-left: 0 !important; padding: 1rem; }
+      .sidebar.show { transform: translateX(0); }
+      .main-content { margin-left: 0 !important; padding: 1rem; padding-top: 70px; }
       .card { margin-bottom: 1rem; }
       .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .btn, .form-control, .form-select { font-size: 1.1rem; padding: 0.75rem; }
       h2 { font-size: 1.6rem; }
-      .navbar-toggler { font-size: 1.8rem; }
+      .navbar-toggler { display: block; } /* aparece no mobile */
       .d-flex { flex-direction: column !important; }
       .row > div { margin-bottom: 1rem; }
       .d-flex.justify-content-between { flex-direction: column !important; align-items: flex-start !important; }
@@ -78,8 +79,8 @@
 </head>
 <body>
 
-<!-- Botão hambúrguer (sempre visível) -->
-<button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+<!-- Botão hambúrguer (só aparece após login) -->
+<button class="navbar-toggler" type="button" id="hamburgerBtn" onclick="toggleSidebar()">
   <i class="fas fa-bars fs-3"></i>
 </button>
 
@@ -106,7 +107,7 @@
 </div>
 
 <!-- APLICAÇÃO PRINCIPAL -->
-<div id="mainApp" class="hidden">
+<div id="mainApp" class="hidden flex-column flex-md-row">
   <!-- Sidebar -->
   <div class="sidebar p-3" id="sidebar">
     <h4 class="text-center mb-4"><i class="fas fa-home"></i> AlugaFácil</h4>
@@ -432,11 +433,15 @@ async function checkAuth() {
     document.getElementById('currentUserDisplay').textContent = currentUser.username || currentUser.email || 'Usuário';
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
+    // Mostra o botão hambúrguer após login
+    document.getElementById('hamburgerBtn').style.display = 'block';
     showTab(0);
     await loadAllData();
   } else {
     document.getElementById('loginScreen').classList.remove('hidden');
     document.getElementById('mainApp').classList.add('hidden');
+    // Esconde o botão hambúrguer na tela de login
+    document.getElementById('hamburgerBtn').style.display = 'none';
   }
 }
 
@@ -452,6 +457,8 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
     document.getElementById('currentUserDisplay').textContent = currentUser.username;
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
+    // Mostra o botão hambúrguer após login
+    document.getElementById('hamburgerBtn').style.display = 'block';
     showTab(0);
     await loadAllData();
   } catch (err) {
@@ -468,6 +475,8 @@ function logout() {
   document.getElementById('loginScreen').classList.remove('hidden');
   document.getElementById('formLogin').reset();
   document.getElementById('loginAlert').style.display = 'none';
+  // Esconde o botão hambúrguer ao sair
+  document.getElementById('hamburgerBtn').style.display = 'none';
 }
 
 // Chama verificação de auth ao carregar a página
@@ -832,7 +841,7 @@ function editarPagamento(id) {
 
 // Função para abrir/fechar sidebar (funciona em desktop e mobile)
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('show');
+  document.getElementById('sidebar').classList.toggle('collapsed');
   document.getElementById('mainContent').classList.toggle('collapsed');
 }
 </script>
