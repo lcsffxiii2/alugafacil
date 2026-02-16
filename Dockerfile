@@ -12,7 +12,7 @@ RUN wget https://github.com/pocketbase/pocketbase/releases/download/v0.22.21/poc
 
 # Copia seu frontend para a pasta pública do PocketBase
 COPY index.html /pb_public/index.html
-
+COPY bootstrap.min.css /pb_public/bootstrap.min.css
 # Cria pasta para dados persistentes (volume montado aqui)
 RUN mkdir -p /pb_data
 
