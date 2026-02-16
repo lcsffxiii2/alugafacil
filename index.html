@@ -39,14 +39,16 @@
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.show { transform: translateX(0); }
-      .main-content { padding: 1rem; margin-top: 60px; }
+      .main-content { padding: 1rem; margin-top: 70px; } /* espaço para botão hambúrguer */
       .card { margin-bottom: 1rem; }
       .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .btn, .form-control, .form-select { font-size: 1.1rem; padding: 0.75rem; }
       h2 { font-size: 1.6rem; }
       .navbar-toggler { font-size: 1.8rem; }
-      .d-flex { flex-direction: column; }
+      .d-flex { flex-direction: column !important; }
       .row > div { margin-bottom: 1rem; }
+      .d-flex.justify-content-between { flex-direction: column !important; align-items: flex-start !important; }
+      .d-flex.justify-content-between > * { width: 100%; margin-bottom: 0.5rem; }
     }
 
     /* Botão hambúrguer fixo no mobile */
@@ -59,6 +61,7 @@
       border: none; 
       color: white; 
       padding: 0.5rem 1rem; 
+      border-radius: 0.25rem;
     }
 
     /* Conteúdo principal com margem para não ficar embaixo do botão */
@@ -406,7 +409,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-const pb = new PocketBase('https://alugafacil.fly.dev'); // ← URL DO BACKEND NO FLY.IO
+const pb = new PocketBase('https://alugafacil-backend.fly.dev'); // ← URL DO BACKEND NO FLY.IO
 
 let currentUser = null;
 let imoveis = [];
