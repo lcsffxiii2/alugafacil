@@ -2,94 +2,28 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AlugaFácil - Controle Compartilhado</title>
-
-  <!-- Bootstrap CSS local -->
   <link href="/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome -->
+  <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- PocketBase SDK -->
   <script src="https://unpkg.com/pocketbase@0.22.1/dist/pocketbase.umd.js"></script>
-
   <style>
     body { background: #f8f9fa; font-family: system-ui, sans-serif; }
-    .sidebar { 
-      min-height: 100vh; 
-      background: #2c3e50; 
-      color: white; 
-      transition: transform 0.3s ease; 
-      width: 260px; 
-      position: fixed; 
-      top: 0; 
-      left: 0; 
-      z-index: 1000; 
-      transform: translateX(0); /* aberta por padrão no desktop */
-    }
-    .sidebar.collapsed { transform: translateX(-100%); } /* recolhida */
+    .sidebar { min-height: 100vh; background: #2c3e50; color: white; }
     .nav-link { color: #bdc3c7 !important; }
     .nav-link.active, .nav-link:hover { background: #34495e; color: white !important; }
     .login-container { max-width: 420px; margin: 100px auto; padding: 2.5rem; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
     .hidden { display: none !important; }
     .card-imovel:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); transition: all 0.25s; }
-
-    /* Botão hambúrguer (só aparece após login) */
-    .navbar-toggler { 
-      position: fixed; 
-      top: 1rem; 
-      left: 1rem; 
-      z-index: 1100; 
-      background: #2c3e50; 
-      border: none; 
-      color: white; 
-      padding: 0.5rem 1rem; 
-      border-radius: 0.25rem;
-      display: none; /* começa escondido */
-    }
-
-    /* Conteúdo principal */
-    .main-content { 
-      padding-top: 70px; 
-      padding-bottom: 2rem; 
-      margin-left: 260px; /* espaço para sidebar aberta */
-      transition: margin-left 0.3s ease;
-    }
-    .main-content.collapsed { 
-      margin-left: 0; 
-    }
-
-    /* Ajustes mobile */
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); } /* começa recolhida no celular */
-      .sidebar.show { transform: translateX(0); }
-      .main-content { margin-left: 0 !important; padding: 1rem; padding-top: 70px; }
-      .card { margin-bottom: 1rem; }
-      .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .btn, .form-control, .form-select { font-size: 1.1rem; padding: 0.75rem; }
-      h2 { font-size: 1.6rem; }
-      .navbar-toggler { display: block; } /* aparece no mobile */
-      .d-flex { flex-direction: column !important; }
-      .row > div { margin-bottom: 1rem; }
-      .d-flex.justify-content-between { flex-direction: column !important; align-items: flex-start !important; }
-      .d-flex.justify-content-between > * { width: 100%; margin-bottom: 0.5rem; }
-    }
   </style>
 </head>
 <body>
-
-<!-- Botão hambúrguer (só aparece após login) -->
-<button class="navbar-toggler" type="button" id="hamburgerBtn" onclick="toggleSidebar()">
-  <i class="fas fa-bars fs-3"></i>
-</button>
-
 <!-- TELA DE LOGIN -->
 <div id="loginScreen">
   <div class="login-container">
     <h3 class="text-center mb-4 text-primary"><i class="fas fa-home me-2"></i> AlugaFácil</h3>
     <p class="text-center text-muted mb-4">Controle compartilhado de imóveis e aluguéis</p>
-
     <form id="formLogin">
       <div class="mb-3">
         <label class="form-label">Usuário</label>
@@ -101,18 +35,15 @@
       </div>
       <button type="submit" class="btn btn-primary w-100 py-2">Entrar</button>
     </form>
-
     <div id="loginAlert" class="alert mt-4" role="alert" style="display:none;"></div>
   </div>
 </div>
-
 <!-- APLICAÇÃO PRINCIPAL -->
-<div id="mainApp" class="hidden flex-column flex-md-row">
+<div id="mainApp" class="d-flex hidden">
   <!-- Sidebar -->
-  <div class="sidebar p-3" id="sidebar">
+  <div class="sidebar p-3" style="width:260px;">
     <h4 class="text-center mb-4"><i class="fas fa-home"></i> AlugaFácil</h4>
     <small class="d-block text-center mb-3">Usuário: <strong id="currentUserDisplay"></strong></small>
-
     <ul class="nav flex-column">
       <li class="nav-item"><a href="#" class="nav-link active" onclick="showTab(0)"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
       <li class="nav-item"><a href="#" class="nav-link" onclick="showTab(1)"><i class="fas fa-building me-2"></i> Imóveis</a></li>
@@ -122,14 +53,13 @@
       <li class="nav-item mt-5"><a href="#" class="nav-link text-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Sair</a></li>
     </ul>
   </div>
-
   <!-- Conteúdo principal -->
-  <div class="flex-grow-1 p-4 main-content" id="mainContent">
+  <div class="flex-grow-1 p-4">
     <!-- Dashboard -->
     <div id="tab0" class="tab-content">
       <h2 class="mb-4">Dashboard</h2>
       <div class="row g-4">
-        <div class="col-12 col-md-3">
+        <div class="col-md-3">
           <div class="card text-white bg-primary h-100">
             <div class="card-body">
               <h5>Total Imóveis</h5>
@@ -137,7 +67,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-md-3">
           <div class="card text-white bg-success h-100">
             <div class="card-body">
               <h5>Alugados</h5>
@@ -145,7 +75,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-md-3">
           <div class="card text-white bg-warning h-100">
             <div class="card-body">
               <h5>Renda Mensal</h5>
@@ -153,7 +83,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-md-3">
           <div class="card text-white bg-danger h-100">
             <div class="card-body">
               <h5>Atrasados</h5>
@@ -164,23 +94,21 @@
         </div>
       </div>
     </div>
-
     <!-- Imóveis -->
     <div id="tab1" class="tab-content d-none">
-      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Imóveis</h2>
-        <button class="btn btn-success mt-2 mt-md-0" onclick="abrirModalImovel()">
+        <button class="btn btn-success" onclick="abrirModalImovel()">
           <i class="fas fa-plus"></i> Novo imóvel
         </button>
       </div>
       <div class="row" id="listaImoveis"></div>
     </div>
-
     <!-- Inquilinos -->
     <div id="tab2" class="tab-content d-none">
-      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Inquilinos</h2>
-        <button class="btn btn-success mt-2 mt-md-0" onclick="abrirModalInquilino()">
+        <button class="btn btn-success" onclick="abrirModalInquilino()">
           <i class="fas fa-plus"></i> Novo inquilino
         </button>
       </div>
@@ -200,13 +128,12 @@
         </table>
       </div>
     </div>
-
     <!-- Contratos -->
     <div id="tab3" class="tab-content d-none">
-      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Contratos</h2>
-        <div class="mt-2 mt-md-0">
-          <label class="form-label me-2 d-inline">Filtrar Status:</label>
+        <div>
+          <label class="form-label me-2">Filtrar Status:</label>
           <select class="form-select d-inline-block w-auto" id="filtroStatusContrato" onchange="renderContratos()">
             <option value="todos">Todos</option>
             <option value="ativos">Ativos</option>
@@ -233,12 +160,11 @@
         </table>
       </div>
     </div>
-
     <!-- Financeiro -->
     <div id="tab4" class="tab-content d-none">
-      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Financeiro</h2>
-        <button class="btn btn-success mt-2 mt-md-0" onclick="abrirModalPagamento()">
+        <button class="btn btn-success" onclick="abrirModalPagamento()">
           <i class="fas fa-plus"></i> Registrar Pagamento
         </button>
       </div>
@@ -264,7 +190,6 @@
     </div>
   </div>
 </div>
-
 <!-- Modal Imóvel -->
 <div class="modal fade" id="modalImovel" tabindex="-1" aria-labelledby="modalImovelTitle" aria-hidden="true">
   <div class="modal-dialog">
@@ -278,25 +203,27 @@
           <label class="form-label">Endereço completo</label>
           <input type="text" class="form-control" id="imovelEndereco" required>
         </div>
-        <div class="row g-3">
-          <div class="col-12 col-md-6">
+        <div class="row">
+          <div class="col-6">
             <label class="form-label">Tipo</label>
             <select class="form-select" id="imovelTipo" required>
               <option value="Casa">Casa</option>
               <option value="Kitnet">Kitnet</option>
             </select>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-6">
             <label class="form-label">Valor do aluguel (R$)</label>
             <input type="number" step="0.01" class="form-control" id="imovelValor" required>
           </div>
-          <div class="col-12 col-md-6">
-            <label class="form-label">Data de início</label>
-            <input type="date" class="form-control" id="imovelDataInicio" required>
-          </div>
-          <div class="col-12 col-md-6">
-            <label class="form-label">Data de fim</label>
-            <input type="date" class="form-control" id="imovelDataFim" required>
+          <div class="row">
+            <div class="col-6">
+              <label class="form-label">Data de início</label>
+              <input type="date" class="form-control" id="imovelDataInicio" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Data de fim</label>
+              <input type="date" class="form-control" id="imovelDataFim" required>
+            </div>
           </div>
         </div>
       </div>
@@ -307,7 +234,6 @@
     </div>
   </div>
 </div>
-
 <!-- Modal Inquilino -->
 <div class="modal fade" id="modalInquilino" tabindex="-1" aria-labelledby="modalInquilinoTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -360,7 +286,6 @@
     </div>
   </div>
 </div>
-
 <!-- Modal Contrato -->
 <div class="modal fade" id="modalContrato" tabindex="-1" aria-labelledby="modalContratoTitle" aria-hidden="true">
   <div class="modal-dialog">
@@ -372,15 +297,9 @@
       <div class="modal-body">
         <div class="mb-3"><label>Imóvel</label><select class="form-select" id="contratoImovel" required></select></div>
         <div class="mb-3"><label>Inquilino</label><select class="form-select" id="contratoInquilino" required></select></div>
-        <div class="row g-3">
-          <div class="col-12 col-md-6">
-            <label class="form-label">Início</label>
-            <input type="date" class="form-control" id="contratoInicio" required>
-          </div>
-          <div class="col-12 col-md-6">
-            <label class="form-label">Fim</label>
-            <input type="date" class="form-control" id="contratoFim" required>
-          </div>
+        <div class="row">
+          <div class="col-6"><label>Início</label><input type="date" class="form-control" id="contratoInicio" required></div>
+          <div class="col-6"><label>Fim</label><input type="date" class="form-control" id="contratoFim" required></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -390,7 +309,6 @@
     </div>
   </div>
 </div>
-
 <!-- Modal Pagamento -->
 <div class="modal fade" id="modalPagamento" tabindex="-1" aria-labelledby="modalPagamentoTitle" aria-hidden="true">
   <div class="modal-dialog">
@@ -414,18 +332,14 @@
     </div>
   </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-const pb = new PocketBase('https://alugafacil-backend.fly.dev'); // ← URL DO BACKEND NO FLY.IO
-
+const pb = new PocketBase('https://alugafacil.fly.dev'); // ← URL DO BACKEND NO FLY.IO
 let currentUser = null;
 let imoveis = [];
 let inquilinos = [];
 let contratos = [];
 let pagamentos = [];
-
 // Verifica se já está logado ao carregar a página
 async function checkAuth() {
   if (pb.authStore.isValid) {
@@ -433,32 +347,24 @@ async function checkAuth() {
     document.getElementById('currentUserDisplay').textContent = currentUser.username || currentUser.email || 'Usuário';
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
-    // Mostra o botão hambúrguer após login
-    document.getElementById('hamburgerBtn').style.display = 'block';
     showTab(0);
     await loadAllData();
   } else {
     document.getElementById('loginScreen').classList.remove('hidden');
     document.getElementById('mainApp').classList.add('hidden');
-    // Esconde o botão hambúrguer na tela de login
-    document.getElementById('hamburgerBtn').style.display = 'none';
   }
 }
-
 document.getElementById('formLogin').addEventListener('submit', async (e) => {
   e.preventDefault();
   const username = document.getElementById('loginUsername').value.trim();
   const password = document.getElementById('loginPassword').value;
   const alertEl = document.getElementById('loginAlert');
-
   try {
     await pb.collection('users').authWithPassword(username, password);
     currentUser = pb.authStore.model;
     document.getElementById('currentUserDisplay').textContent = currentUser.username;
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
-    // Mostra o botão hambúrguer após login
-    document.getElementById('hamburgerBtn').style.display = 'block';
     showTab(0);
     await loadAllData();
   } catch (err) {
@@ -467,7 +373,6 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
     alertEl.style.display = 'block';
   }
 });
-
 function logout() {
   pb.authStore.clear();
   currentUser = null;
@@ -475,27 +380,19 @@ function logout() {
   document.getElementById('loginScreen').classList.remove('hidden');
   document.getElementById('formLogin').reset();
   document.getElementById('loginAlert').style.display = 'none';
-  // Esconde o botão hambúrguer ao sair
-  document.getElementById('hamburgerBtn').style.display = 'none';
 }
-
 // Chama verificação de auth ao carregar a página
 window.addEventListener('load', checkAuth);
-
 async function loadAllData() {
   try {
     const imRes = await pb.collection('imoveis').getList(1, 200, { expand: 'inquilinoId' });
     imoveis = imRes.items;
-
     const inqRes = await pb.collection('inquilinos').getList(1, 200);
     inquilinos = inqRes.items;
-
     const conRes = await pb.collection('contratos').getList(1, 200, { expand: 'imovelId,inquilinoId' });
     contratos = conRes.items;
-
     const pagRes = await pb.collection('pagamentos').getList(1, 500, { expand: 'imovelId' });
     pagamentos = pagRes.items;
-
     renderImoveis();
     renderInquilinos();
     renderContratos();
@@ -506,29 +403,23 @@ async function loadAllData() {
     alert('Não foi possível carregar os dados. Verifique se o PocketBase está rodando.');
   }
 }
-
 function showTab(n) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('d-none'));
   document.getElementById('tab' + n).classList.remove('d-none');
-
   if (n === 0) atualizarDashboard();
   if (n === 3) renderContratos();
   if (n === 4) renderFinanceiro();
 }
-
 function atualizarDashboard() {
   const set = (id, val) => {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
   };
-
   const total = imoveis.length;
   const alugados = imoveis.filter(i => i.inquilinoId).length;
   const renda = imoveis.filter(i => i.inquilinoId).reduce((s, i) => s + Number(i.valor || 0), 0);
-
   let atrasados = 0;
   let valorAtraso = 0;
-
   imoveis.filter(i => i.inquilinoId).forEach(im => {
     const vencido = pagamentos.filter(p => p.imovelId === im.id && Number(p.valorPago || 0) < Number(im.valor || 0));
     if (vencido.length > 0) {
@@ -536,14 +427,12 @@ function atualizarDashboard() {
       valorAtraso += vencido.reduce((s, p) => s + (Number(im.valor || 0) - Number(p.valorPago || 0)), 0);
     }
   });
-
   set('totalImoveis', total);
   set('imoveisAlugados', alugados);
   set('rendaMensal', 'R$ ' + renda.toLocaleString('pt-BR'));
   set('contratosAtrasados', atrasados);
   set('totalAtrasado', 'R$ ' + valorAtraso.toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
 }
-
 function renderImoveis() {
   const container = document.getElementById('listaImoveis');
   if (!container) return;
@@ -551,8 +440,8 @@ function renderImoveis() {
   imoveis.forEach(im => {
     const iq = im.expand?.inquilinoId || {};
     const div = document.createElement('div');
-    div.className = 'col-12 col-md-4 mb-3';
-    div.innerHTML = `<div class="card h-100">
+    div.className = 'col-md-4 mb-3';
+    div.innerHTML = `<div class="card">
       <div class="card-body">
         <h5>${im.endereco || 'Sem endereço'}</h5>
         <p>${im.tipo} - R$ ${Number(im.valor || 0).toLocaleString('pt-BR')}</p>
@@ -562,7 +451,6 @@ function renderImoveis() {
     container.appendChild(div);
   });
 }
-
 function renderInquilinos() {
   const tbody = document.querySelector('#tabelaInquilinos tbody');
   if (!tbody) return;
@@ -579,28 +467,23 @@ function renderInquilinos() {
     tbody.appendChild(tr);
   });
 }
-
 function renderContratos() {
   const tbody = document.querySelector('#tabelaContratos tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
-
   const filtro = document.getElementById('filtroStatusContrato')?.value || 'todos';
-
   const contratosFiltrados = contratos.filter(con => {
-    const ativo = con.ativo !== false;
+    const ativo = con.ativo !== false; // true ou undefined = ativo
     if (filtro === 'ativos') return ativo;
     if (filtro === 'encerrados') return !ativo;
-    return true;
+    return true; // 'todos'
   });
-
   contratosFiltrados.forEach(con => {
     const im = con.expand?.imovelId || {};
     const iq = con.expand?.inquilinoId || {};
     const inicio = im.dataInicio ? new Date(im.dataInicio).toLocaleDateString('pt-BR') : '-';
     const fim = im.dataFim ? new Date(im.dataFim).toLocaleDateString('pt-BR') : '-';
     const status = con.ativo !== false ? 'Ativo' : 'Encerrado';
-
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${im.endereco || '-'}</td>
@@ -612,18 +495,14 @@ function renderContratos() {
     tbody.appendChild(tr);
   });
 }
-
 function renderFinanceiro() {
   const tbody = document.querySelector('#tabelaFinanceiro tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
-
   const filtroMesAno = document.getElementById('filtroFinanceiro')?.value || '';
-
-  const pagamentosFiltrados = filtroMesAno 
+  const pagamentosFiltrados = filtroMesAno
     ? pagamentos.filter(pag => pag.mesAno === filtroMesAno)
     : pagamentos;
-
   pagamentosFiltrados.forEach(pag => {
     const im = pag.expand?.imovelId || {};
     const mesAno = pag.mesAno || '-';
@@ -641,27 +520,19 @@ function renderFinanceiro() {
     tbody.appendChild(tr);
   });
 }
-
 function abrirModalImovel() {
   document.getElementById('imovelEndereco').value = '';
   document.getElementById('imovelTipo').value = 'Casa';
   document.getElementById('imovelValor').value = '';
-  document.getElementById('imovelDataInicio').value = '';
-  document.getElementById('imovelDataFim').value = '';
   new bootstrap.Modal(document.getElementById('modalImovel')).show();
 }
-
 async function salvarImovel() {
   const data = {
     endereco: document.getElementById('imovelEndereco').value.trim(),
     tipo: document.getElementById('imovelTipo').value,
-    valor: Number(document.getElementById('imovelValor').value) || 0,
-    dataInicio: document.getElementById('imovelDataInicio').value || null,
-    dataFim: document.getElementById('imovelDataFim').value || null
+    valor: Number(document.getElementById('imovelValor').value) || 0
   };
-
   if (!data.endereco || data.valor <= 0) return alert('Preencha todos os campos corretamente');
-
   try {
     await pb.collection('imoveis').create(data);
     bootstrap.Modal.getInstance(document.getElementById('modalImovel')).hide();
@@ -671,7 +542,6 @@ async function salvarImovel() {
     alert('Erro ao cadastrar imóvel: ' + err.message);
   }
 }
-
 function abrirModalInquilino() {
   document.getElementById('inquilinoNome').value = '';
   document.getElementById('inquilinoNasc').value = '';
@@ -682,7 +552,6 @@ function abrirModalInquilino() {
   document.getElementById('inquilinoNac').value = 'Brasileira';
   new bootstrap.Modal(document.getElementById('modalInquilino')).show();
 }
-
 async function salvarInquilino() {
   const data = {
     nome: document.getElementById('inquilinoNome').value.trim(),
@@ -693,9 +562,7 @@ async function salvarInquilino() {
     profissao: document.getElementById('inquilinoProfissao').value.trim() || null,
     nacionalidade: document.getElementById('inquilinoNac').value.trim() || null
   };
-
   if (!data.nome || !data.cpf || !data.nasc) return alert('Preencha nome, CPF e data de nascimento');
-
   try {
     await pb.collection('inquilinos').create(data);
     bootstrap.Modal.getInstance(document.getElementById('modalInquilino')).hide();
@@ -705,44 +572,36 @@ async function salvarInquilino() {
     alert('Erro ao cadastrar inquilino: ' + err.message);
   }
 }
-
 function abrirModalContrato() {
   const selImovel = document.getElementById('contratoImovel');
   selImovel.innerHTML = '<option value="">Selecione o imóvel...</option>';
   imoveis.forEach(im => {
     selImovel.innerHTML += `<option value="${im.id}">${im.endereco} (${im.tipo})</option>`;
   });
-
   const selInq = document.getElementById('contratoInquilino');
   selInq.innerHTML = '<option value="">Selecione o inquilino...</option>';
   inquilinos.forEach(iq => {
     selInq.innerHTML += `<option value="${iq.id}">${iq.nome} - ${iq.cpf}</option>`;
   });
-
   new bootstrap.Modal(document.getElementById('modalContrato')).show();
 }
-
 async function salvarContrato() {
   const imovelId = document.getElementById('contratoImovel').value;
   const inquilinoId = document.getElementById('contratoInquilino').value;
   const dataInicio = document.getElementById('contratoInicio').value;
   const dataFim = document.getElementById('contratoFim').value;
-
   if (!imovelId || !inquilinoId || !dataInicio || !dataFim) return alert('Preencha todos os campos');
-
   try {
     await pb.collection('contratos').create({
       imovelId,
       inquilinoId,
       ativo: true
     });
-
     await pb.collection('imoveis').update(imovelId, {
       inquilinoId,
       dataInicio,
       dataFim
     });
-
     bootstrap.Modal.getInstance(document.getElementById('modalContrato')).hide();
     await loadAllData();
     alert('Contrato cadastrado e imóvel atualizado!');
@@ -750,38 +609,31 @@ async function salvarContrato() {
     alert('Erro ao cadastrar contrato: ' + err.message);
   }
 }
-
 async function encerrarContrato(contratoId, imovelId) {
   if (!confirm('Tem certeza que deseja encerrar este contrato? O imóvel será liberado.')) return;
-
   try {
     await pb.collection('contratos').update(contratoId, {
       ativo: false
     });
-
     await pb.collection('imoveis').update(imovelId, {
       inquilinoId: null,
       dataInicio: null,
       dataFim: null
     });
-
     await loadAllData();
     alert('Contrato encerrado com sucesso! Imóvel liberado.');
   } catch (err) {
     alert('Erro ao encerrar contrato: ' + err.message);
   }
 }
-
 function abrirModalPagamento(pagId = null) {
   const sel = document.getElementById('pagImovel');
   sel.innerHTML = '<option value="">Selecione o imóvel...</option>';
   imoveis.forEach(im => {
     sel.innerHTML += `<option value="${im.id}">${im.endereco} (R$ ${Number(im.valor || 0).toLocaleString('pt-BR')})</option>`;
   });
-
   document.getElementById('pagId').value = pagId || '';
   document.getElementById('modalPagamentoTitle').textContent = pagId ? 'Editar Pagamento' : 'Registrar Pagamento';
-
   if (pagId) {
     const pag = pagamentos.find(p => p.id === pagId);
     if (pag) {
@@ -797,10 +649,8 @@ function abrirModalPagamento(pagId = null) {
     document.getElementById('pagData').value = '';
     document.getElementById('pagObs').value = '';
   }
-
   new bootstrap.Modal(document.getElementById('modalPagamento')).show();
 }
-
 async function salvarPagamento() {
   const pagId = document.getElementById('pagId').value;
   const imovelId = document.getElementById('pagImovel').value;
@@ -808,9 +658,7 @@ async function salvarPagamento() {
   const valorPago = Number(document.getElementById('pagValor').value) || 0;
   const dataPgto = document.getElementById('pagData').value;
   const obs = document.getElementById('pagObs').value.trim();
-
   if (!imovelId || !mesAno || valorPago <= 0) return alert('Preencha imóvel, mês/ano e valor pago');
-
   const data = {
     imovelId,
     mesAno,
@@ -818,7 +666,6 @@ async function salvarPagamento() {
     dataPgto: dataPgto || null,
     obs: obs || null
   };
-
   try {
     if (pagId) {
       await pb.collection('pagamentos').update(pagId, data);
@@ -827,22 +674,14 @@ async function salvarPagamento() {
       await pb.collection('pagamentos').create(data);
       alert('Pagamento registrado com sucesso!');
     }
-
     bootstrap.Modal.getInstance(document.getElementById('modalPagamento')).hide();
     await loadAllData();
   } catch (err) {
     alert('Erro ao salvar pagamento: ' + err.message);
   }
 }
-
 function editarPagamento(id) {
   abrirModalPagamento(id);
-}
-
-// Função para abrir/fechar sidebar (funciona em desktop e mobile)
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('collapsed');
-  document.getElementById('mainContent').classList.toggle('collapsed');
 }
 </script>
 </body>
