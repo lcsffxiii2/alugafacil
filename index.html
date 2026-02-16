@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>AlugaFácil - Controle Compartilhado</title>
 
-  <!-- Bootstrap CSS local (você já tem) -->
+  <!-- Bootstrap CSS local -->
   <link href="/bootstrap.min.css" rel="stylesheet">
 
   <!-- Font Awesome -->
@@ -26,32 +26,16 @@
       top: 0; 
       left: 0; 
       z-index: 1000; 
-      transform: translateX(-100%); 
+      transform: translateX(0); /* começa aberta no desktop */
     }
-    .sidebar.show { transform: translateX(0); }
+    .sidebar.collapsed { transform: translateX(-100%); } /* recolhida */
     .nav-link { color: #bdc3c7 !important; }
     .nav-link.active, .nav-link:hover { background: #34495e; color: white !important; }
     .login-container { max-width: 420px; margin: 100px auto; padding: 2.5rem; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
     .hidden { display: none !important; }
     .card-imovel:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); transition: all 0.25s; }
 
-    /* Ajustes mobile */
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.show { transform: translateX(0); }
-      .main-content { padding: 1rem; margin-top: 70px; } /* espaço para botão hambúrguer */
-      .card { margin-bottom: 1rem; }
-      .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .btn, .form-control, .form-select { font-size: 1.1rem; padding: 0.75rem; }
-      h2 { font-size: 1.6rem; }
-      .navbar-toggler { font-size: 1.8rem; }
-      .d-flex { flex-direction: column !important; }
-      .row > div { margin-bottom: 1rem; }
-      .d-flex.justify-content-between { flex-direction: column !important; align-items: flex-start !important; }
-      .d-flex.justify-content-between > * { width: 100%; margin-bottom: 0.5rem; }
-    }
-
-    /* Botão hambúrguer fixo no mobile */
+    /* Botão hambúrguer fixo (sempre visível) */
     .navbar-toggler { 
       position: fixed; 
       top: 1rem; 
@@ -65,13 +49,37 @@
     }
 
     /* Conteúdo principal com margem para não ficar embaixo do botão */
-    .main-content { padding-top: 70px; padding-bottom: 2rem; }
+    .main-content { 
+      padding-top: 70px; 
+      padding-bottom: 2rem; 
+      margin-left: 260px; /* espaço para sidebar aberta */
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.collapsed { 
+      margin-left: 0; /* quando sidebar recolhida */
+    }
+
+    /* Ajustes mobile */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); } /* começa recolhida no celular */
+      .main-content { margin-left: 0 !important; padding: 1rem; }
+      .card { margin-bottom: 1rem; }
+      .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .btn, .form-control, .form-select { font-size: 1.1rem; padding: 0.75rem; }
+      h2 { font-size: 1.6rem; }
+      .navbar-toggler { font-size: 1.8rem; }
+      .d-flex { flex-direction: column !important; }
+      .row > div { margin-bottom: 1rem; }
+      .d-flex.justify-content-between { flex-direction: column !important; align-items: flex-start !important; }
+      .d-flex.justify-content-between > * { width: 100%; margin-bottom: 0.5rem; }
+    }
   </style>
 </head>
 <body>
 
-<!-- Botão hambúrguer para mobile -->
-<button class="navbar-toggler d-md-none" type="button" onclick="toggleSidebar()">
+<!-- Botão hambúrguer (sempre visível) -->
+<button class="navbar-toggler" type="button" onclick="toggleSidebar()">
   <i class="fas fa-bars fs-3"></i>
 </button>
 
@@ -98,7 +106,7 @@
 </div>
 
 <!-- APLICAÇÃO PRINCIPAL -->
-<div id="mainApp" class="d-flex hidden flex-column flex-md-row">
+<div id="mainApp" class="hidden">
   <!-- Sidebar -->
   <div class="sidebar p-3" id="sidebar">
     <h4 class="text-center mb-4"><i class="fas fa-home"></i> AlugaFácil</h4>
@@ -115,7 +123,7 @@
   </div>
 
   <!-- Conteúdo principal -->
-  <div class="flex-grow-1 p-4 main-content">
+  <div class="flex-grow-1 p-4 main-content" id="mainContent">
     <!-- Dashboard -->
     <div id="tab0" class="tab-content">
       <h2 class="mb-4">Dashboard</h2>
@@ -822,9 +830,10 @@ function editarPagamento(id) {
   abrirModalPagamento(id);
 }
 
-// Função para abrir/fechar sidebar no mobile
+// Função para abrir/fechar sidebar (funciona em desktop e mobile)
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('show');
+  document.getElementById('mainContent').classList.toggle('collapsed');
 }
 </script>
 </body>
