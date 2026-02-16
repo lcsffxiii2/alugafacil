@@ -4,7 +4,7 @@
 #
 
 app = 'alugafacil'
-primary_region = 'gru'
+primary_region = 'ams'
 
 [build]
 
