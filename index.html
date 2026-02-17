@@ -35,7 +35,7 @@
     .hidden { display: none !important; }
     .card-imovel:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); transition: all 0.25s; }
 
-    /* Botão hambúrguer (só aparece após login) */
+    /* Botão hambúrguer (sempre visível após login) */
     .navbar-toggler { 
       position: fixed; 
       top: 1rem; 
@@ -53,7 +53,7 @@
     .main-content { 
       padding-top: 70px; 
       padding-bottom: 2rem; 
-      margin-left: 260px; /* espaço para sidebar aberta */
+      margin-left: 260px; 
       transition: margin-left 0.3s ease;
     }
     .main-content.collapsed { 
@@ -69,7 +69,7 @@
       .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .btn, .form-control, .form-select { font-size: 1.1rem; padding: 0.75rem; }
       h2 { font-size: 1.6rem; }
-      .navbar-toggler { display: block; } /* aparece no mobile */
+      .navbar-toggler { display: block; } /* aparece sempre após login */
       .d-flex { flex-direction: column !important; }
       .row > div { margin-bottom: 1rem; }
       .d-flex.justify-content-between { flex-direction: column !important; align-items: flex-start !important; }
@@ -839,7 +839,7 @@ function editarPagamento(id) {
   abrirModalPagamento(id);
 }
 
-// Função para abrir/fechar sidebar (funciona em desktop e mobile)
+// Função para abrir/fechar sidebar
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('collapsed');
   document.getElementById('mainContent').classList.toggle('collapsed');
